@@ -6,10 +6,11 @@ const getWorkouts = async (req, res) => {
     res.status(200).json(workouts);
 }
 
+//GET route (get workout by its id)
 const getWorkout = async (req, res) => {
     const {id} = req.params
     if(!mongoose.Types.ObjectId.isValid(id)){
-        return res.status(400).json({Msg: "No such workout"});
+        return res.status(404).json({Msg: "No such workout"});
     }
     const workouts = await Workout.findById(id)
 
@@ -19,7 +20,7 @@ const getWorkout = async (req, res) => {
     res.status(200).json(workouts);
 }
 
-//POST route
+//POST/CREATE route
 const createWorkout = async (req, res) => {
     const {title, reps, load} = req.body;
     try {
@@ -31,11 +32,34 @@ const createWorkout = async (req, res) => {
 }
 
 //UPDATE/PUT route
+const updateWorkout = async (req, res) => {
+    const {id} = req.params;
+    if(!mongoose.Types.ObjectId.isValid(id)){
+        return res.status(404).json({Msg: "No such workout!"})
+    }
+    const workout = await Workout.findOneAndUpdate({_id:id}, {...req.body});
+    if(!workout){
+        return res.status(400).json({Msg: "The given id doesn't exist!!"});
+    }
+    res.status(200).json({Msg: workout});
+}
 
 //DELETE route
-
+const deleteWorkout = async(req,res) => {
+    const {id} = req.params
+    if(!mongoose.Types.ObjectId.isValid(id)){
+        return res.status(404).json({Msg: "No such workout!"})
+    }
+    const workout = await Workout.findByIdAndDelete({_id: id});
+    if(!workout){
+        return res.status(400).json({Msg: "The given id doesn't exist!!"});
+    }
+    res.status(200).json({Msg: workout});
+}
 module.exports = {
     getWorkouts,
     getWorkout,
-    createWorkout
+    createWorkout,
+    deleteWorkout,
+    updateWorkout
 }

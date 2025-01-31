@@ -11,7 +11,7 @@ const app = express();
 app.use(express.json());
 
 //routes
-app.use("/api/workout", workoutRoutes);
+app.use("/api/workouts", workoutRoutes);
 
 //DB connection
 mongoose.connect(process.env.DB_CONNECTION)

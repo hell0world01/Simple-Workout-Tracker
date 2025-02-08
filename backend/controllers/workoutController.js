@@ -1,5 +1,6 @@
 const Workout = require("../model/workoutModel");
 const mongoose = require("mongoose");
+
 //GET route
 const getWorkouts = async (req, res) => {
     const workouts = await Workout.find({}).sort({createdAt: -1});
@@ -23,6 +24,21 @@ const getWorkout = async (req, res) => {
 //POST/CREATE route
 const createWorkout = async (req, res) => {
     const {title, reps, load} = req.body;
+    const emptyInputs = [];
+
+    if(!title){
+        emptyInputs.push("title");
+    }
+    if(!reps){
+        emptyInputs.push("reps");
+    }
+    if(!load){
+        emptyInputs.push("load");
+    }
+
+    if(emptyInputs.length > 0){
+        return res.status(400).json({error: "Input all the fields", emptyInputs})
+    }
     try {
         const workout = await Workout.create({title, reps, load});
         res.status(200).json(workout)
@@ -41,7 +57,7 @@ const updateWorkout = async (req, res) => {
     if(!workout){
         return res.status(400).json({Msg: "The given id doesn't exist!!"});
     }
-    res.status(200).json({Msg: workout});
+    res.status(200).json(workout);
 }
 
 //DELETE route
@@ -51,10 +67,11 @@ const deleteWorkout = async(req,res) => {
         return res.status(404).json({Msg: "No such workout!"})
     }
     const workout = await Workout.findByIdAndDelete({_id: id});
+    console.log(workout);
     if(!workout){
         return res.status(400).json({Msg: "The given id doesn't exist!!"});
     }
-    res.status(200).json({Msg: workout});
+    res.status(200).json(workout);
 }
 module.exports = {
     getWorkouts,

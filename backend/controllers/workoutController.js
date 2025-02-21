@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 //GET route
 const getWorkouts = async (req, res) => {
     const workouts = await Workout.find({}).sort({createdAt: -1});
+    if(!workouts) return res.status(500).json({msg:"Something went wrong with server!"})
     res.status(200).json(workouts);
 }
 
@@ -11,7 +12,7 @@ const getWorkouts = async (req, res) => {
 const getWorkout = async (req, res) => {
     const {id} = req.params
     if(!mongoose.Types.ObjectId.isValid(id)){
-        return res.status(404).json({Msg: "No such workout"});
+        return res.status(404).json({error: "No such workout"});
     }
     const workouts = await Workout.findById(id)
 
